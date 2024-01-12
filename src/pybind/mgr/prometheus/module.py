@@ -1296,12 +1296,12 @@ class Module(MgrModule, OrchestratorClientMixin):
         if modify_instance_id:
             daemons = raise_if_exception(self.list_daemons(daemon_type='rgw'))
             for daemon in daemons:
+                daemon_id_prefix = str(daemon.daemon_id).split(".")[2] if '.' in daemon.daemon_id else daemon.daemon_id
                 self.metrics['rgw_metadata'].set(1,
-                                                 ('{}.{}'.format(str(daemon.daemon_type),
-                                                                 str(daemon.daemon_id)),
+                                                 (f"{daemon.daemon_type}.{daemon.daemon_id}",
                                                   str(daemon.hostname),
                                                   str(daemon.version),
-                                                  str(daemon.daemon_id).split(".")[2]))
+                                                  daemon_id_prefix))
         for key, value in servers.items():
             service_id, service_type = key
             if service_type == 'rgw' and not modify_instance_id:
